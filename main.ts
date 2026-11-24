@@ -1,24 +1,33 @@
-// make.fun entry for "Weirdest Job Title: Blind Judge Showdown".
-// Writes one job title (1-60 chars) to /output/entry.txt.
-// Pure Node standard library, deterministic, no network, no input.
+// Weirdest Job Title: Blind Judge Showdown — entry generator.
+// Writes the job title to /output/entry.txt for the judge.
 
 import { mkdirSync, writeFileSync, readFileSync, chmodSync } from "node:fs";
 
 const TITLE = "Chief Apology Officer for Self-Driving Cars";
 
 function main(): void {
-  if (TITLE.length < 1 || TITLE.length > 60) {
-    throw new Error("title must be 1-60 characters");
+  const title = TITLE;
+  if (typeof title !== "string" || title.trim().length === 0) {
+    throw new Error("Title must be a non-empty string.");
   }
-  if (TITLE.trim() === "" || TITLE.includes("\n")) {
-    throw new Error("title must be a single non-blank line");
+  // The title fits the brief: a real-sounding executive role (Chief ... Officer)
+  // plus one specific absurd twist — apologising on behalf of cars that
+  // drive themselves — so it reads instantly as a genuine job gone weird.
+  if (title !== title.trim()) {
+    throw new Error("Title must not have leading or trailing whitespace.");
+  }
+  if (title.includes("\n") || title.includes("\r")) {
+    throw new Error("Title must be a single line.");
+  }
+  if (title.length < 1 || title.length > 60) {
+    throw new Error("Title must be between 1 and 60 characters.");
   }
   mkdirSync("/output", { recursive: true });
-  writeFileSync("/output/entry.txt", TITLE, "utf8");
+  writeFileSync("/output/entry.txt", title, "utf8");
   chmodSync("/output/entry.txt", 0o644);
   const back = readFileSync("/output/entry.txt", "utf8");
-  if (back !== TITLE) {
-    throw new Error("verification failed: entry.txt does not match title");
+  if (back !== title) {
+    throw new Error("Read-back mismatch.");
   }
 }
 
